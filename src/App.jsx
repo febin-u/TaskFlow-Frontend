@@ -10,9 +10,8 @@ import {
 } from "react-router-dom";
 import "./App.css";
 
-const API = "http://localhost:5001/api/tasks";
-const AUTH_API = "http://localhost:5001/api/auth";
-
+const API = "https://taskflow-backend-g7s2.onrender.com/api/tasks";
+const AUTH_API = "https://taskflow-backend-g7s2.onrender.com/api/auth";
 const USER_KEY = "taskflow_user";
 const TOKEN_KEY = "taskflow_token";
 const HISTORY_KEY = "taskflow_activity_history";
