@@ -26,3 +26,18 @@ dist-ssr
 .env
 .env.*
 !.env.example
+# Android build files
+android/.gradle/
+android/local.properties
+android/**/build/
+android/captures/
+
+# Signing keys and passwords
+*.jks
+*.keystore
+android/key.properties
+
+# Release APK files
+*.apk
+*.aab
+android/app/release/

@@ -658,11 +658,14 @@ function PageHeading({
   );
 }
 
+
 function StatCard({ label, value, note, icon }) {
   return (
     <article className="stat-card panel">
-      <span className="stat-icon">{icon}</span>
-      <p>{label}</p>
+      <div className="stat-card-heading">
+        <p>{label}</p>
+        <span className="stat-icon">{icon}</span>
+      </div>
       <strong>{value}</strong>
       <small>{note}</small>
     </article>
