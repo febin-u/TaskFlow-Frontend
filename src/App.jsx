@@ -1294,7 +1294,65 @@ function ProfilePage({ user, tasks }) {
   );
 }
 
+
+import { LocalNotifications } from "@capacitor/local-notifications";
+
 function SettingsPage({ theme, setTheme }) {
+  const [notificationStatus, setNotificationStatus] = useState(
+    "Checking..."
+  );
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    async function checkPermission() {
+      try {
+        const result = await LocalNotifications.checkPermissions();
+        setNotificationStatus(
+          result.display === "granted" ? "Enabled" : "Disabled"
+        );
+      } catch {
+        setNotificationStatus("Unavailable");
+      }
+    }
+
+    checkPermission();
+  }, []);
+
+  async function enableNotifications() {
+    setBusy(true);
+
+    try {
+      let permission = await LocalNotifications.checkPermissions();
+
+      if (permission.display !== "granted") {
+        permission = await LocalNotifications.requestPermissions();
+      }
+
+      if (permission.display !== "granted") {
+        setNotificationStatus("Permission denied");
+        return;
+      }
+
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            id: 1001,
+            title: "TaskFlow notifications enabled",
+            body: "You'll now be able to receive task reminders.",
+            schedule: { at: new Date(Date.now() + 5000) },
+          },
+        ],
+      });
+
+      setNotificationStatus("Enabled");
+    } catch (error) {
+      console.error("Notification error:", error);
+      setNotificationStatus("Unavailable");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <>
       <PageHeading
@@ -1305,23 +1363,19 @@ function SettingsPage({ theme, setTheme }) {
       <section className="panel settings-row">
         <div>
           <h3>Appearance</h3>
-          <p className="muted">
-            Choose your preferred theme.
-          </p>
+          <p className="muted">Choose your preferred theme.</p>
         </div>
 
         <div className="button-row">
           <button
-            className={`btn ${theme === "dark" ? "primary" : "secondary"
-              }`}
+            className={`btn ${theme === "dark" ? "primary" : "secondary"}`}
             onClick={() => setTheme("dark")}
           >
             Dark mode
           </button>
 
           <button
-            className={`btn ${theme === "light" ? "primary" : "secondary"
-              }`}
+            className={`btn ${theme === "light" ? "primary" : "secondary"}`}
             onClick={() => setTheme("light")}
           >
             Light mode
@@ -1333,14 +1387,18 @@ function SettingsPage({ theme, setTheme }) {
         <div>
           <h3>Notifications</h3>
           <p className="muted">
-            Upcoming and overdue deadlines are highlighted
-            in Calendar.
+            Enable Android notifications and test a reminder.
           </p>
+          <p className="muted">Status: {notificationStatus}</p>
         </div>
 
-        <span className="status-pill">
-          Enabled in app
-        </span>
+        <button
+          className="btn primary"
+          onClick={enableNotifications}
+          disabled={busy}
+        >
+          {busy ? "Please wait..." : "Enable notifications"}
+        </button>
       </section>
     </>
   );
